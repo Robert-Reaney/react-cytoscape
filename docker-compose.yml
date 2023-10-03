@@ -1,0 +1,30 @@
+version: '3.0'
+
+services:
+  ui:
+    container_name: react_ui
+    build:
+      context: ./app
+      dockerfile_inline: |
+        FROM node:16 AS build
+
+        WORKDIR /app
+        COPY package*.json /app/
+        RUN chmod 777 /app/package-lock.json
+        RUN npm install
+        RUN npm install cytoscape
+        COPY node_modules node_modules
+        COPY public public
+        CMD ["npm", "start"]
+    ports:
+      - 3000:3000
+    volumes:
+      - ./app/src:/app/src:rw
+      - ./logs/npm:/root/.npm
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - ESLINT_NO_DEV_ERRORS=true
+
+volumes:
+  container_node_modules:
+      
